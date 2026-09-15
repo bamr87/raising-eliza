@@ -128,10 +128,17 @@ python3 harness.py --chapter 5              # just the boss
 resolve, so a checkout missing the campaign fails loudly at the start instead of
 quietly producing seven chapters of work done without the method.
 
-The MCP server itself is on it-journey's `main`. The *campaign content* — the seven
-chapters this run executed — is still open as a pull request at the time of writing;
-until it lands on `main`, preflight will correctly refuse to start, and the fix is to
-check out the branch carrying it. That refusal is the feature working.
+Both halves are on it-journey's `main`: the MCP server and the campaign content the
+seven chapters executed. A fresh clone is enough — no branch to check out. Verified by
+running `preflight()` against a pristine `origin/main` checkout, which answers:
+
+```
+preflight OK: quest server serves 'relic-raisers' — Epic Quest: The Relic Raisers
+```
+
+If it ever refuses instead, that is the safeguard working, not a fault: it means the
+checkout cannot serve the campaign, and running anyway would produce seven chapters of
+work done without the method.
 
 Re-running does not reproduce this run exactly. The gates are deterministic; the agent
 is not. What should reproduce is the *shape*: red trials in chapter 4, a ledger that
