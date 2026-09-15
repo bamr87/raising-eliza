@@ -1,0 +1,23 @@
+{
+  "chapter": 1,
+  "quest": "relic-raisers-01-the-dig-site",
+  "model": "claude-sonnet-5",
+  "started": "2026-09-15T01:49:03.149066+00:00",
+  "elapsed_s": 279.4,
+  "agent_exit": 0,
+  "num_turns": 30,
+  "cost_usd": 1.2172554000000002,
+  "agent_report": "pped its Appendix A abbreviation table, independently confirming every MAD abbreviation the relic uses (`W'R`, `T'H`, `T'O`, `V'S`, `E'L`, `E'N`, `E'M`, `O'E`, `O'R`, `F'N`, etc.) rather than trusting the annotator's inline claims.\n- Confirmed the octal-constant syntax (12 digits + `K`) and `$`-delimited string syntax in the relic against the primer's own grammar sections.\n- Confirmed by grep that the literal word `NEWKEY` never appears in the actual program code (`MAD-SLIP_transcription.txt`), only in script data \u2014 supporting the annotator's claim that Weizenbaum's described \"try next keyword\" escape hatch isn't implemented in this code.\n- Hand-traced three consecutive turns of the golden conversation (`golden/cacm_1966_conversation.txt`) against the actual script rules and matching algorithm, reproducing \"IN WHAT WAY\", \"CAN YOU THINK OF A SPECIFIC EXAMPLE\", and \"YOUR BOYFRIEND MADE YOU COME HERE\" exactly \u2014 this is manual simulation, not execution, and I labeled it that way.\n- Spot-checked every line citation in the final doc against the actual files after writing it.\n\n**What I could not determine:** whether the full 15-exchange golden transcript reproduces byte-for-byte (only traced 3 of 15 turns), whether the `HASH`/`YMATCH`/`ASSMBL` SLIP primitives behave as described (their implementation isn't in this dig site), and the provenance/reliability of the transcription itself (original source is stated lost) \u2014 these are recorded as Hypotheses or Unknowns, not claimed as fact.",
+  "agent_stderr": "",
+  "gate": "expedition",
+  "gate_passed": true,
+  "gate_detail": "piles found: ['evidence', 'hypothes', 'unknown']",
+  "quest_calls": [
+    "get_quest"
+  ],
+  "quest_call_count": 1,
+  "work_files": [
+    "EXPEDITION.md",
+    "mad_primer.txt"
+  ]
+}

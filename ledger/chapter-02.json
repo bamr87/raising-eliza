@@ -1,0 +1,26 @@
+{
+  "chapter": 2,
+  "quest": "relic-raisers-02-the-strata",
+  "model": "claude-sonnet-5",
+  "started": "2026-09-15T01:53:42.574299+00:00",
+  "elapsed_s": 380.8,
+  "agent_exit": 0,
+  "num_turns": 21,
+  "cost_usd": 1.0310086,
+  "agent_report": "ntime \u2014 none of that is stated in this file, and Chapter I's `EXPEDITION.md` already confirmed `NEWKEY` isn't implemented as control flow anywhere in the MAD-SLIP code).\n- `profile.txt` \u2014 the parser's saved output.\n\n**What I verified by running it:**\n- The parser runs clean against the real relic file and is deterministic (re-ran it, diffed against the saved `profile.txt` \u2014 identical).\n- Caught and fixed a real bug this way: my first tokenizer split `=` only on whitespace, so it missed the glued form `(=WHAT)` (used ~20\u00d7) while catching the spaced form `(= EVERYONE)` (used 3\u00d7) \u2014 this silently misclassified 16 R4-link rules as broken R1 rules. Found it by cross-checking alternative-kind counts, fixed the tokenizer to always split `=` as its own token (like `(`/`)`), reran, and hand-verified every resulting count against `grep`/manual reading of the script: R2 (6), R3 DLIST tags (BELIEF \u00d74, NOUN \u00d72, FAMILY \u00d78), R4 (19), R5/PRE (`YOU'RE`, `I'M`), class-matches (6), tag-matches (3), and the 13 inline `(=X)` links inside R1 rule bodies \u2014 all match hand counts.\n\n**What I could not determine (recorded as HYPOTHESIS/Not-determined in the dictionary):** the runtime meaning of `START`, the closing `()`, and `(NEWKEY)` \u2014 the script's prose never states what they do, and no MAD-SLIP interpreter exists at this dig site (per Chapter I) to test them; also whether `MY` appearing twice (as a `MEMORY` target and as its own rule) is intentional, and why `=` is spelled two ways in the same file.",
+  "agent_stderr": "",
+  "gate": "strata",
+  "gate_passed": true,
+  "gate_detail": "parser exit=0: ero-or-more wildcards across all decomposition patterns: 98\n  decomposition patterns using a (/TAG) tag-match: 3\n  decomposition patterns using a (*WORD ...) class-match: 6\n\nTotal distinct top-level keywords (incl. the MEMORY target keyword): 67\nKeywords appearing more than once at top level: ['MY']",
+  "quest_calls": [
+    "get_quest"
+  ],
+  "quest_call_count": 1,
+  "work_files": [
+    "DATA_DICTIONARY.md",
+    "EXPEDITION.md",
+    "mad_primer.txt",
+    "parse_script.py",
+    "profile.txt"
+  ]
+}

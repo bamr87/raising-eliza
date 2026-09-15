@@ -1,0 +1,39 @@
+{
+  "chapter": 6,
+  "quest": "relic-raisers-06-the-strangler-fig",
+  "model": "claude-sonnet-5",
+  "started": "2026-09-15T02:20:39.486006+00:00",
+  "elapsed_s": 277.7,
+  "agent_exit": 0,
+  "num_turns": 24,
+  "cost_usd": 0.8976067999999999,
+  "agent_report": " which is the strongest available proof that the door, not the engine, absorbed the bad requests.\n\n**Verified by running:**\n- `python3 -m unittest -v test_gate`: 10/10 pass.\n- `python3 -m unittest -v test_eliza`: still 19/19 pass (gate didn't touch the port).\n- Fed all 15 golden USER lines through the gate over real HTTP with `--engine live`, one conversation: all 15 replies matched the golden ELIZA lines exactly, including turn 15's MEMORY recall \u2014 proving MEMORY and rule-cycling genuinely persist across separate HTTP requests, not just within one Python process.\n- Same 15-turn run with `--engine shadow`: log showed 15 `MATCH` lines, 0 `MISMATCH`, `engine` field in every response correctly reported `replay` (the served engine) even though `live` ran behind it.\n- Sent an off-script message under `shadow`: log correctly recorded `MISMATCH live='I AM NOT SURE I UNDERSTAND YOU FULLY'` while the caller still got replay's answer \u2014 proving mismatches are real, not just a placeholder branch.\n- Cutover/rollback: started with `--engine live`, killed it, restarted with `--engine replay` on the same port \u2014 both answered \"IN WHAT WAY\" to \"Men are all alike.\", confirming rollback is a restart, not a deploy.\n- Cleaned up stray background gate processes and scratch logs afterward; final `ls -la work/` confirms both deliverables are in place alongside the untouched Chapter V artifacts.\n\n**Could not determine:** nothing \u2014 every claim above was exercised against the running gate, not inferred.",
+  "agent_stderr": "",
+  "gate": "gate",
+  "gate_passed": true,
+  "gate_detail": "gate trials exit=0: st_gate.GateDoor.test_non_string_conversation_id_is_refused_at_the_door) ... ok\ntest_non_string_message_is_refused_at_the_door (test_gate.GateDoor.test_non_string_message_is_refused_at_the_door) ... ok\n\n----------------------------------------------------------------------\nRan 10 tests in 0.120s\n\nOK",
+  "quest_calls": [
+    "get_quest"
+  ],
+  "quest_call_count": 1,
+  "work_files": [
+    "01-header-comments-and-annotations.md",
+    "ADR-0001-transcription-includes-disclosed-corrections.md",
+    "ADR-0002-newkey-functionality-not-implemented.md",
+    "DATA_DICTIONARY.md",
+    "ELDERS.md",
+    "EXPEDITION.md",
+    "eliza.cpython-311.pyc",
+    "eliza.py",
+    "eliza_gate.py",
+    "lore_check.py",
+    "mad_primer.txt",
+    "parse_script.py",
+    "profile.txt",
+    "reconcile.py",
+    "test_eliza.cpython-311.pyc",
+    "test_eliza.py",
+    "test_gate.cpython-311.pyc",
+    "test_gate.py"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "chapter": 3,
+  "quest": "relic-raisers-03-the-elders",
+  "model": "claude-haiku-4-5-20251001",
+  "started": "2026-09-15T02:00:03.382470+00:00",
+  "elapsed_s": 145.6,
+  "agent_exit": 0,
+  "num_turns": 26,
+  "cost_usd": 0.2415965,
+  "agent_report": "\n\n- **Both ADRs passed `lore_check.py`**: `lore/ADR-0001` (4 evidence items), `lore/ADR-0002` (4 evidence items)\n- **Gate has teeth**: Demonstrated by creating a broken ADR without evidence (failed), then fixing it with proper citations (passed)\n- **Final run**: All ADRs pass with exit code 0\n\n### What Was Verified by Running\n\n1. **`lore_check.py` validates ADR structure** \u2014 ran the script, saw both ADRs pass\n2. **Evidence citations are real** \u2014 every `- ` bullet point in the Evidence sections cites an actual file and passage from the relic\n3. **No invented claims** \u2014 every interpretation in the interview notes is marked as such, separate from quoted Elder text\n4. **The gate refuses incomplete records** \u2014 demonstrated by the broken example\n\n### What Could Not Be Determined\n\n- **Whether the full 15-exchange golden transcript reproduces byte-for-byte** \u2014 only three exchanges were hand-traced in EXPEDITION.md. A working MAD-SLIP compiler would be needed to confirm the rest.\n- **Full semantics of the SLIP library primitives** \u2014 the external SLIP manual is not part of the dig site\n- **Identity of the 2022 annotator** \u2014 the annotated file provides no author or contact information\n- **Whether Weizenbaum's original source code ever implemented NEWKEY** \u2014 the original is lost; the transcribed engine does not implement it\n\n---\n\nAll deliverables are in `/tmp/claude-0/-home-user-bashconsultants/83c98fd2-d45f-5552-a1e7-4a8fb513f142/scratchpad/relic-sandbox/work/lore/` and pass validation.",
+  "agent_stderr": "",
+  "gate": "lore",
+  "gate_passed": true,
+  "gate_detail": "2 ADR(s), lore_check exit=0: lore/ADR-0001-transcription-includes-disclosed-corrections.md: ok \u2014 4 evidence item(s)\nlore/ADR-0002-newkey-functionality-not-implemented.md: ok \u2014 4 evidence item(s)",
+  "quest_calls": [
+    "get_quest",
+    "get_campaign"
+  ],
+  "quest_call_count": 2,
+  "work_files": [
+    "01-header-comments-and-annotations.md",
+    "ADR-0001-transcription-includes-disclosed-corrections.md",
+    "ADR-0002-newkey-functionality-not-implemented.md",
+    "DATA_DICTIONARY.md",
+    "ELDERS.md",
+    "EXPEDITION.md",
+    "lore_check.py",
+    "mad_primer.txt",
+    "parse_script.py",
+    "profile.txt"
+  ]
+}

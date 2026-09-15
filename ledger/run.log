@@ -1,0 +1,67 @@
+preflight OK: quest server serves 'relic-raisers' — Epic Quest: The Relic Raisers
+
+=== chapter 1: relic-raisers-01-the-dig-site  [claude-sonnet-5] ===
+  agent exit=0 turns=30 cost=1.2172554000000002 279.4s
+  quest calls: 1 ['get_quest']
+  GATE expedition: PASS — piles found: ['evidence', 'hypothes', 'unknown']
+
+=== chapter 2: relic-raisers-02-the-strata  [claude-sonnet-5] ===
+  agent exit=0 turns=21 cost=1.0310086 380.8s
+  quest calls: 1 ['get_quest']
+  GATE strata: PASS — parser exit=0: ero-or-more wildcards across all decomposition patterns: 98
+  decomposition patterns using a (/TAG) tag-match: 3
+  decomposition patterns using a (*WORD ...) class-match: 6
+
+Total distinct top-level keywords (incl. the MEMORY target keyword): 67
+Keywords appearing more than once at top level: ['MY']
+
+=== chapter 3: relic-raisers-03-the-elders  [claude-haiku-4-5-20251001] ===
+  agent exit=0 turns=26 cost=0.2415965 145.6s
+  quest calls: 2 ['get_campaign', 'get_quest']
+  GATE lore: PASS — 2 ADR(s), lore_check exit=0: lore/ADR-0001-transcription-includes-disclosed-corrections.md: ok — 4 evidence item(s)
+lore/ADR-0002-newkey-functionality-not-implemented.md: ok — 4 evidence item(s)
+
+=== chapter 4: relic-raisers-04-the-gauntlet-of-trials  [claude-sonnet-5] ===
+  agent exit=0 turns=15 cost=0.5086632 156.0s
+  quest calls: 2 ['get_campaign', 'get_quest']
+  GATE gauntlet: PASS — trials exit=1 (red required before the port): ror: eliza module not available yet: ModuleNotFoundError("No module named 'eliza'")
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.003s
+
+FAILED (failures=15)
+
+=== chapter 5: relic-raisers-05-the-rosetta-ledger  [claude-sonnet-5] ===
+  agent exit=0 turns=35 cost=2.4865988000000003 934.4s
+  quest calls: 2 ['get_campaign', 'get_quest']
+  GATE ledger: PASS — reconcile exit=0: ON'T ARGUE WITH YOU       WHY DO YOU THINK I DON'T ARGUE WITH YOU        yes
+ 13  You are afraid of me.                            DOES IT PLEASE YOU TO BELIEVE I AM AFRAID OF  DOES IT PLEASE YOU TO BELIEVE I AM AFRAID OF   yes
+ 14  My father is afraid of everybody.                WHAT ELSE COMES TO MIND WHEN YOU THINK OF YOU WHAT ELSE COMES TO MIND WHEN YOU THINK OF YOU  yes
+ 15
+
+=== chapter 6: relic-raisers-06-the-strangler-fig  [claude-sonnet-5] ===
+  agent exit=0 turns=24 cost=0.8976067999999999 277.7s
+  quest calls: 1 ['get_quest']
+  GATE gate: PASS — gate trials exit=0: st_gate.GateDoor.test_non_string_conversation_id_is_refused_at_the_door) ... ok
+test_non_string_message_is_refused_at_the_door (test_gate.GateDoor.test_non_string_message_is_refused_at_the_door) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.120s
+
+OK
+
+=== chapter 7: relic-raisers-07-write-for-the-archaeologist  [claude-haiku-4-5-20251001] ===
+  agent exit=0 turns=39 cost=0.3915791000000001 207.1s
+  quest calls: 2 ['get_campaign', 'get_quest']
+  GATE archaeologist: PASS — verify.sh exit=0: 002-newkey-functionality-not-implemented.md: ok — 4 evidence item(s)
+lore/ADR-0003-memory-cycle-deterministic.md: ok — 4 evidence item(s)
+lore/ADR-0004-gate-three-engines.md: ok — 4 evidence item(s)
+lore/ADR-0005-forward-compatibility-madslip.md: ok — 4 evidence item(s)
+✓ Lore passed
+
+ALL GATES PASSED
+----------------------------------------------------------------------
+Ran 19 t
+
+=== this run: 7/7 gates passed; campaign: 7/7 ===
+HARNESS EXIT=0

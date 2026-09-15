@@ -1,0 +1,37 @@
+{
+  "chapter": 5,
+  "quest": "relic-raisers-05-the-rosetta-ledger",
+  "model": "claude-sonnet-5",
+  "started": "2026-09-15T02:05:05.032347+00:00",
+  "elapsed_s": 934.4,
+  "agent_exit": 0,
+  "num_turns": 35,
+  "cost_usd": 2.4865988000000003,
+  "agent_report": "n suite (written in an earlier chapter, before `eliza.py` existed) \u2192 all 19 trials pass unmodified.\n- Deliberately fed `reconcile.py` a wrong golden line \u2192 it correctly reports the mismatch and exits 1, confirming the ledger actually gates.\n- Ad hoc inputs *not* in the golden transcript (repeated \"I am sad\", \"you remind me of my sister\", nonsense filler, a fresh MEMORY store/recall cycle) all produced sensible, varied, correctly-cycling replies \u2014 evidence the engine generalizes rather than pattern-matching the golden text.\n\n**Three genuinely underdetermined points**, each disclosed in `eliza.py`'s docstring and in `work/EXPEDITION.md`: (1) substitution happens in-place for every scanned word naming a substituting rule, traced to the MAD `TESTS` function since it isn't visible in the main scan loop; (2) reassembly cycling is per `(keyword, decomposition-group)`, confirmed by four independent golden turns including two different keywords (`ALIKE`, `LIKE`) sharing one target group's counter; (3) MEMORY's template selection \u2014 the MAD source calls an unrecoverable SLIP `HASH` primitive not present at this dig site \u2014 is a disclosed reconstruction (a dedicated reverse-cycling counter) tuned against the golden transcript's one memory recall, since that's the only data point available to check it against; this is flagged as the one place a free parameter was fit to golden output rather than derived from a documented source, everything else follows from the script's own header grammar.",
+  "agent_stderr": "",
+  "gate": "ledger",
+  "gate_passed": true,
+  "gate_detail": "reconcile exit=0: ON'T ARGUE WITH YOU       WHY DO YOU THINK I DON'T ARGUE WITH YOU        yes\n 13  You are afraid of me.                            DOES IT PLEASE YOU TO BELIEVE I AM AFRAID OF  DOES IT PLEASE YOU TO BELIEVE I AM AFRAID OF   yes\n 14  My father is afraid of everybody.                WHAT ELSE COMES TO MIND WHEN YOU THINK OF YOU WHAT ELSE COMES TO MIND WHEN YOU THINK OF YOU  yes\n 15  Bullies.                                         DOES THAT HAVE ANYTHING TO DO WITH THE FACT T DOES THAT HAVE ANYTHING TO DO WITH THE FACT T  yes\n\nturns compared: 15   mismatches: 0\nRECONCILED -- the ledger ties out.",
+  "quest_calls": [
+    "get_quest",
+    "get_campaign"
+  ],
+  "quest_call_count": 2,
+  "work_files": [
+    "01-header-comments-and-annotations.md",
+    "ADR-0001-transcription-includes-disclosed-corrections.md",
+    "ADR-0002-newkey-functionality-not-implemented.md",
+    "DATA_DICTIONARY.md",
+    "ELDERS.md",
+    "EXPEDITION.md",
+    "eliza.cpython-311.pyc",
+    "eliza.py",
+    "lore_check.py",
+    "mad_primer.txt",
+    "parse_script.py",
+    "profile.txt",
+    "reconcile.py",
+    "test_eliza.cpython-311.pyc",
+    "test_eliza.py"
+  ]
+}
