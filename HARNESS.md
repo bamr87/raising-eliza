@@ -107,3 +107,33 @@ agent exit code, gate verdict, gate detail, and the files that appeared in `work
 `run.json` is assembled from those files rather than from the current invocation, so
 resuming after an interruption does not erase the chapters that already ran. That was
 also a bug, found the way such bugs usually are — the container restarted mid-campaign.
+
+## Running it yourself
+
+The harness needs a checkout of the quest repository, because that is where the method
+lives. `QUEST_REPO` points at it (default `/home/user/it-journey`).
+
+```bash
+git clone https://github.com/bamr87/it-journey.git
+export QUEST_REPO="$PWD/it-journey"
+
+# Confirm the server can serve the campaign BEFORE running anything.
+python3 "$QUEST_REPO/scripts/quest/mcp_server.py" --self-test
+cd harness && python3 harness.py --plan     # the chapter plan, no agent spawned
+python3 harness.py                          # the whole campaign
+python3 harness.py --chapter 5              # just the boss
+```
+
+`harness.py` runs `preflight()` first and refuses to start if `get_campaign` does not
+resolve, so a checkout missing the campaign fails loudly at the start instead of
+quietly producing seven chapters of work done without the method.
+
+The MCP server itself is on it-journey's `main`. The *campaign content* — the seven
+chapters this run executed — is still open as a pull request at the time of writing;
+until it lands on `main`, preflight will correctly refuse to start, and the fix is to
+check out the branch carrying it. That refusal is the feature working.
+
+Re-running does not reproduce this run exactly. The gates are deterministic; the agent
+is not. What should reproduce is the *shape*: red trials in chapter 4, a ledger that
+ties out in chapter 5, and a `work/` tree that passes `verify.sh`. If chapter 5's
+ledger does not tie out, that is the method working — it caught a port that did not.
