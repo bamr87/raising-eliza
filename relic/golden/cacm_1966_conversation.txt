@@ -1,0 +1,30 @@
+USER: Men are all alike.
+ELIZA: IN WHAT WAY
+USER: They're always bugging us about something or other.
+ELIZA: CAN YOU THINK OF A SPECIFIC EXAMPLE
+USER: Well, my boyfriend made me come here.
+ELIZA: YOUR BOYFRIEND MADE YOU COME HERE
+USER: He says I'm depressed much of the time.
+ELIZA: I AM SORRY TO HEAR YOU ARE DEPRESSED
+USER: It's true. I am unhappy.
+ELIZA: DO YOU THINK COMING HERE WILL HELP YOU NOT TO BE UNHAPPY
+USER: I need some help, that much seems certain.
+ELIZA: WHAT WOULD IT MEAN TO YOU IF YOU GOT SOME HELP
+USER: Perhaps I could learn to get along with my mother.
+ELIZA: TELL ME MORE ABOUT YOUR FAMILY
+USER: My mother takes care of me.
+ELIZA: WHO ELSE IN YOUR FAMILY TAKES CARE OF YOU
+USER: My father.
+ELIZA: YOUR FATHER
+USER: You are like my father in some ways.
+ELIZA: WHAT RESEMBLANCE DO YOU SEE
+USER: You are not very aggressive, but I think you don't want me to notice that.
+ELIZA: WHAT MAKES YOU THINK I AM NOT VERY AGGRESSIVE
+USER: You don't argue with me.
+ELIZA: WHY DO YOU THINK I DON'T ARGUE WITH YOU
+USER: You are afraid of me.
+ELIZA: DOES IT PLEASE YOU TO BELIEVE I AM AFRAID OF YOU
+USER: My father is afraid of everybody.
+ELIZA: WHAT ELSE COMES TO MIND WHEN YOU THINK OF YOUR FATHER
+USER: Bullies.
+ELIZA: DOES THAT HAVE ANYTHING TO DO WITH THE FACT THAT YOUR BOYFRIEND MADE YOU COME HERE
