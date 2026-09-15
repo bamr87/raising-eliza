@@ -1,0 +1,106 @@
+Greeting: 'HOW DO YOU DO. PLEASE TELL ME YOUR PROBLEM'
+Top-level keyword/MEMORY/NONE forms: 68
+
+Rules by form:
+  NONE                 1
+  R1/R5-decomposition  29
+  R2-substitution      6
+  R3-DLIST             12
+  R4-link              19
+  R6-MEMORY            1
+
+Keywords with a '=' substitution: 18
+  DONT = DON'T
+  CANT = CAN'T
+  WONT = WON'T
+  DREAMED = DREAMT
+  DREAMS = DREAM
+  AM = ARE
+  YOUR = MY
+  WERE = WAS
+  ME = YOU
+  YOU'RE = I'M
+  I'M = YOU'RE
+  MYSELF = YOURSELF
+  YOURSELF = MYSELF
+  MOM = MOTHER
+  DAD = FATHER
+  I = YOU
+  YOU = I
+  MY = YOUR
+
+Keywords with an explicit precedence number: 21
+  distinct precedence values seen: [1, 2, 3, 4, 5, 10, 15, 50]
+  COMPUTER     precedence 50
+  MACHINE      precedence 50
+  MACHINES     precedence 50
+  COMPUTERS    precedence 50
+  NAME         precedence 15
+  ALIKE        precedence 10
+  SAME         precedence 10
+  LIKE         precedence 10
+  REMEMBER     precedence 5
+  DREAMT       precedence 4
+  DREAMED      precedence 4
+  IF           precedence 3
+  DREAM        precedence 3
+  DREAMS       precedence 3
+  WAS          precedence 2
+  MY           precedence 2
+  EVERYONE     precedence 2
+  EVERYBODY    precedence 2
+  NOBODY       precedence 2
+  NOONE        precedence 2
+  ALWAYS       precedence 1
+
+DLIST tag rules (R3): 12
+  FEEL         tags=['BELIEF']
+  THINK        tags=['BELIEF']
+  BELIEVE      tags=['BELIEF']
+  WISH         tags=['BELIEF']
+  MOTHER       tags=['NOUN', 'FAMILY']
+  MOM          tags=['FAMILY']
+  DAD          tags=['FAMILY']
+  FATHER       tags=['NOUN', 'FAMILY']
+  SISTER       tags=['FAMILY']
+  BROTHER      tags=['FAMILY']
+  WIFE         tags=['FAMILY']
+  CHILDREN     tags=['FAMILY']
+  distinct tags used: {'BELIEF': 4, 'NOUN': 2, 'FAMILY': 8}
+
+Pure link/equivalence rules (R4, e.g. (HOW (=WHAT))): 19
+  DREAMED      -> (=DREAMT)
+  DREAMS       -> (=DREAM)
+  HOW          -> (=WHAT)
+  WHEN         -> (=WHAT)
+  ALIKE        -> (=DIT)
+  SAME         -> (=DIT)
+  CERTAINLY    -> (=YES)
+  MAYBE        -> (=PERHAPS)
+  DEUTSCH      -> (=XFREMD)
+  FRANCAIS     -> (=XFREMD)
+  ITALIANO     -> (=XFREMD)
+  ESPANOL      -> (=XFREMD)
+  MACHINE      -> (=COMPUTER)
+  MACHINES     -> (=COMPUTER)
+  COMPUTERS    -> (=COMPUTER)
+  WERE         -> (=WAS)
+  EVERYBODY    -> (=EVERYONE)
+  NOBODY       -> (=EVERYONE)
+  NOONE        -> (=EVERYONE)
+
+MEMORY rules (R6): 1
+  MEMORY MY: 4 sub-rules
+
+NONE rules found: 1 (grammar requires exactly 1)
+Decomposition rules (R1/R5, keyword != NONE): 29
+  total decomposition-pattern groups: 54
+  total reassembly alternatives across all groups: 211
+  reassembly alternative kinds (incl. NONE): {'words': 195, 'link': 13, 'newkey': 5, 'pre': 2}
+  rules containing a PRE alternative (R5): ["YOU'RE", "I'M"]
+  total '0' zero-or-more wildcards across all decomposition patterns: 98
+  decomposition patterns using a (/TAG) tag-match: 3
+  decomposition patterns using a (*WORD ...) class-match: 6
+
+Total distinct top-level keywords (incl. the MEMORY target keyword): 67
+Keywords appearing more than once at top level: ['MY']
