@@ -270,6 +270,21 @@ class Script:
         self.rules[keyword] = {"groups": groups}
 
 
+def _clone_rule(rule):
+    if "link" in rule:
+        return {"link": rule["link"]}
+    return {
+        "groups": [
+            {
+                "pattern": g["pattern"],
+                "alts": g["alts"],
+                "next_alt": 0,
+            }
+            for g in rule["groups"]
+        ]
+    }
+
+
 # ---------------------------------------------------------------------------
 # Matching and reassembly
 # ---------------------------------------------------------------------------
@@ -328,9 +343,11 @@ def _assemble(words_template, captured):
 class Eliza:
     def __init__(self, script_path=DEFAULT_SCRIPT_PATH):
         self.script = Script(script_path)
+        self.rules = {k: _clone_rule(v) for k, v in self.script.rules.items()}
         self.memory_queue = []       # FIFO of already-assembled memory strings
         self.memory_next_template = 3  # reconstructed selector, see module docstring
         self.turn_count = 0
+        self.last = None
 
     def greeting_line(self):
         return " ".join(self.script.greeting)
@@ -342,16 +359,34 @@ class Eliza:
         limit = (self.turn_count + 1) % 4 or 4
 
         keyword, sentence = self._scan(text)
+        memory_stored = False
+        memory_recalled = False
 
         if keyword is None:
             if limit == 4 and self.memory_queue:
-                return self.memory_queue.pop(0)
-            return self._reassemble_from("NONE", [])
+                reply = self.memory_queue.pop(0)
+                memory_recalled = True
+                source = "memory"
+            else:
+                reply = self._reassemble_from("NONE", [])
+                source = "none"
+        else:
+            if keyword == self.script.memory_keyword:
+                before = len(self.memory_queue)
+                self._store_memory(sentence)
+                memory_stored = len(self.memory_queue) > before
+            reply = self._reassemble_from(keyword, sentence)
+            source = "rule"
 
-        if keyword == self.script.memory_keyword:
-            self._store_memory(sentence)
-
-        return self._reassemble_from(keyword, sentence)
+        self.last = {
+            "keyword": keyword,
+            "sentence": " ".join(sentence),
+            "source": source,
+            "limit": limit,
+            "memory_stored": memory_stored,
+            "memory_recalled": memory_recalled,
+        }
+        return reply
 
     def _scan(self, text):
         """Tokenize, apply in-place substitution, rank keywords by
@@ -367,7 +402,7 @@ class Eliza:
                     continue
                 break
 
-            rule = self.script.rules.get(tok)
+            rule = self.rules.get(tok)
             sub = self.script.substitutions.get(tok)
             sentence.extend(sub if sub else [tok])
 
@@ -390,7 +425,7 @@ class Eliza:
         if depth > 20:
             return NOMATCH_FILLERS[0]
 
-        rule = self.script.rules.get(keyword)
+        rule = self.rules.get(keyword)
         if rule is None:
             return NOMATCH_FILLERS[(self.turn_count - 1) % 4]
 
@@ -434,7 +469,8 @@ class Eliza:
 if __name__ == "__main__":
     import sys
 
-    eliza = Eliza()
+    script = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_SCRIPT_PATH
+    eliza = Eliza(script)
     print(eliza.greeting_line())
     for line in sys.stdin:
         line = line.rstrip("\n")

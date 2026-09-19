@@ -57,6 +57,7 @@ This dig site raises the relic: a faithful Python port of the algorithm, proven 
 
 ```bash
 python3 eliza.py       # interactive prompt, reads 1966_CACM_script.txt
+python3 eliza.py ../relic/1966_CACM_script.txt    # same, explicit script path
 # then type: Men are all alike.
 # ELIZA replies: IN WHAT WAY
 ```
@@ -96,7 +97,10 @@ python3 eliza_gate.py --engine shadow --port 8765
 ```bash
 python3 eliza_gate.py --engine live --port 8765
 # The port answers every request from the message, without fallback
+# Open http://127.0.0.1:8765/ for the chat UI (stdlib HTML, no extra deps)
 ```
+
+Replay still ignores `message` and walks the golden transcript. Use `--engine live` to talk. Shadow serves replay to the caller and shows MATCH/MISMATCH in the UI.
 
 ## How to Verify
 

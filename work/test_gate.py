@@ -77,6 +77,24 @@ class GateDoor(unittest.TestCase):
         return self.post(json.dumps(
             {"conversation_id": conversation_id, "message": message}).encode())
 
+    def get(self, path):
+        url = f"http://127.0.0.1:{self.port}{path}"
+        req = urllib.request.Request(url, method="GET")
+        try:
+            with urllib.request.urlopen(req, timeout=10) as r:
+                return r.status, r.headers.get_content_type(), r.read()
+        except urllib.error.HTTPError as e:
+            return e.code, e.headers.get_content_type(), e.read()
+
+    def delete(self, path):
+        url = f"http://127.0.0.1:{self.port}{path}"
+        req = urllib.request.Request(url, method="DELETE")
+        try:
+            with urllib.request.urlopen(req, timeout=10) as r:
+                return r.status, json.loads(r.read())
+        except urllib.error.HTTPError as e:
+            return e.code, json.loads(e.read())
+
     # -- the door lets a well-formed request through -------------------------
 
     def test_a_well_formed_request_is_served(self):
@@ -143,6 +161,106 @@ class GateDoor(unittest.TestCase):
         status, payload = self.say(conv, "They're always bugging us.")
         self.assertEqual(status, 200)
         self.assertEqual(payload["reply"], "CAN YOU THINK OF A SPECIFIC EXAMPLE")
+
+    def test_get_root_serves_the_frontend(self):
+        status, content_type, body = self.get("/")
+        self.assertEqual(status, 200)
+        self.assertEqual(content_type, "text/html")
+        self.assertIn(b"ELIZA", body)
+
+    def test_get_does_not_run_an_engine(self):
+        conv = "door-get-no-engine"
+        status, _, _ = self.get("/api/status")
+        self.assertEqual(status, 200)
+        status, payload = self.say(conv, "Men are all alike.")
+        self.assertEqual(status, 200)
+        self.assertEqual(payload["reply"], "IN WHAT WAY")
+
+    def test_status_reports_engine_without_a_say(self):
+        status, content_type, body = self.get("/api/status")
+        self.assertEqual(status, 200)
+        self.assertEqual(content_type, "application/json")
+        payload = json.loads(body)
+        self.assertEqual(payload["engine"], "replay")
+        self.assertEqual(payload["golden_turns"], 15)
+
+    def test_create_conversation_returns_script_greeting(self):
+        raw = json.dumps({"conversation_id": "door-greet"}).encode()
+        url = f"http://127.0.0.1:{self.port}/api/conversations"
+        req = urllib.request.Request(
+            url, data=raw, method="POST",
+            headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=10) as r:
+            payload = json.loads(r.read())
+        self.assertEqual(payload["conversation_id"], "door-greet")
+        self.assertIn("HOW DO YOU DO", payload["greeting"])
+        status, say_payload = self.say("door-greet", "Men are all alike.")
+        self.assertEqual(status, 200)
+        self.assertEqual(say_payload["reply"], "IN WHAT WAY")
+
+    def test_delete_resets_replay_cursor(self):
+        conv = "door-reset"
+        status, payload = self.say(conv, "Men are all alike.")
+        self.assertEqual(payload["reply"], "IN WHAT WAY")
+        status, payload = self.say(conv, "next")
+        self.assertEqual(payload["reply"], "CAN YOU THINK OF A SPECIFIC EXAMPLE")
+        status, deleted = self.delete(f"/api/conversations/{conv}")
+        self.assertEqual(status, 200)
+        self.assertTrue(deleted["deleted"])
+        status, payload = self.say(conv, "Men are all alike.")
+        self.assertEqual(payload["reply"], "IN WHAT WAY")
+
+    def test_say_keeps_the_original_contract_and_adds_fields(self):
+        status, payload = self.say("door-extra", "Men are all alike.")
+        self.assertEqual(status, 200)
+        self.assertEqual(payload["engine"], "replay")
+        self.assertEqual(payload["reply"], "IN WHAT WAY")
+        self.assertEqual(payload["turn"], 1)
+        self.assertIn("memory", payload)
+
+
+class GateLive(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.port = free_port()
+        cls.proc = subprocess.Popen(
+            [sys.executable, os.path.join(HERE, "eliza_gate.py"),
+             "--engine", "live", "--port", str(cls.port)],
+            cwd=HERE, stderr=subprocess.DEVNULL)
+        assert wait_for_port(cls.port), "live gate never bound its port"
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.proc.terminate()
+        cls.proc.wait(timeout=10)
+
+    def say(self, conversation_id, message):
+        url = f"http://127.0.0.1:{self.port}/say"
+        req = urllib.request.Request(
+            url, data=json.dumps({
+                "conversation_id": conversation_id,
+                "message": message,
+            }).encode(), method="POST",
+            headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=10) as r:
+            return r.status, json.loads(r.read())
+
+    def test_live_answers_from_the_message(self):
+        status, payload = self.say("live-1", "Men are all alike.")
+        self.assertEqual(status, 200)
+        self.assertEqual(payload["engine"], "live")
+        self.assertEqual(payload["reply"], "IN WHAT WAY")
+        self.assertEqual(payload["trace"]["keyword"], "ALIKE")
+        self.assertEqual(payload["trace"]["source"], "rule")
+
+    def test_live_refuses_a_bad_request_before_the_engine(self):
+        url = f"http://127.0.0.1:{self.port}/say"
+        req = urllib.request.Request(
+            url, data=b"{not json", method="POST",
+            headers={"Content-Type": "application/json"})
+        with self.assertRaises(urllib.error.HTTPError) as caught:
+            urllib.request.urlopen(req, timeout=10)
+        self.assertEqual(caught.exception.code, 400)
 
 
 if __name__ == "__main__":

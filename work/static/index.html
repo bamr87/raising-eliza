@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ELIZA — DOCTOR</title>
+  <style>
+    :root {
+      --bg: #070908;
+      --panel: #101412;
+      --ink: #c8f5c0;
+      --dim: #6f8a6c;
+      --line: #1e2a1f;
+      --amber: #e6b35a;
+      --red: #e07070;
+      --user: #9ad4ff;
+      --font: "IBM Plex Mono", "ui-monospace", "SFMono-Regular", Menlo, monospace;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: var(--font); }
+    body {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 100%;
+    }
+    header, footer { border-color: var(--line); }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.25rem;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 0.9rem 1.2rem;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+    }
+    header h1 { font-size: 0.95rem; letter-spacing: 0.18em; margin: 0; font-weight: 600; }
+    header p { margin: 0; color: var(--dim); font-size: 0.75rem; }
+    .badge {
+      display: inline-block;
+      border: 1px solid var(--amber);
+      color: var(--amber);
+      padding: 0.15rem 0.5rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 18rem;
+      min-height: 0;
+    }
+    @media (max-width: 840px) {
+      main { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
+    }
+    #log {
+      overflow: auto;
+      padding: 1.25rem 1.3rem 2rem;
+      line-height: 1.55;
+    }
+    .turn { margin: 0 0 1rem; }
+    .who { color: var(--dim); font-size: 0.68rem; letter-spacing: 0.16em; }
+    .who.user { color: var(--user); }
+    .who.eliza { color: var(--ink); }
+    .text { white-space: pre-wrap; word-break: break-word; }
+    .match { color: var(--amber); font-size: 0.7rem; margin-top: 0.2rem; }
+    .match.no { color: var(--red); }
+    aside {
+      border-left: 1px solid var(--line);
+      background: var(--panel);
+      padding: 1rem 1rem 1.5rem;
+      overflow: auto;
+      font-size: 0.78rem;
+    }
+    aside h2 {
+      margin: 0 0 0.6rem;
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      color: var(--dim);
+      font-weight: 600;
+    }
+    aside dl { margin: 0 0 1.1rem; }
+    aside dt { color: var(--dim); font-size: 0.68rem; margin-top: 0.45rem; }
+    aside dd { margin: 0.1rem 0 0; }
+    #memory li { margin: 0.25rem 0; }
+    #memory { padding-left: 1.1rem; margin: 0; }
+    .warn { color: var(--amber); }
+    footer {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem 1rem;
+      border-top: 1px solid var(--line);
+      background: var(--panel);
+    }
+    #composer {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.5rem;
+    }
+    input[type="text"] {
+      width: 100%;
+      background: #0b0f0c;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      padding: 0.65rem 0.75rem;
+      font: inherit;
+      outline: none;
+    }
+    input[type="text"]:focus { border-color: var(--ink); }
+    button {
+      font: inherit;
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--ink);
+      padding: 0.65rem 0.85rem;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+    }
+    button:hover { background: var(--ink); color: var(--bg); }
+    button.ghost { border-color: var(--dim); color: var(--dim); }
+    button.ghost:hover { color: var(--bg); background: var(--dim); }
+    .tools { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; }
+    .scan {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0 2px,
+        rgba(0, 0, 0, 0.12) 2px 3px
+      );
+      opacity: 0.35;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>ELIZA / DOCTOR</h1>
+      <p>1966 CACM script as data · CTSS / IBM 7094 housing, Python port</p>
+    </div>
+    <div class="tools">
+      <span class="badge" id="engine">…</span>
+      <button class="ghost" id="new" type="button">New session</button>
+      <button class="ghost" id="export" type="button">Export</button>
+    </div>
+  </header>
+  <main>
+    <section id="log" aria-live="polite"></section>
+    <aside>
+      <h2>Session</h2>
+      <dl>
+        <dt>Turns</dt><dd id="turns">0</dd>
+        <dt>Replay cursor</dt><dd id="cursor">0</dd>
+        <dt>Conversation</dt><dd id="cid">—</dd>
+        <dt>Keyword</dt><dd id="keyword">—</dd>
+        <dt>Source</dt><dd id="source">—</dd>
+        <dt>After substitution</dt><dd id="sentence">—</dd>
+      </dl>
+      <h2>MEMORY</h2>
+      <ul id="memory"><li class="warn">empty</li></ul>
+      <p id="hint" class="warn"></p>
+    </aside>
+  </main>
+  <footer>
+    <form id="composer">
+      <input id="message" type="text" autocomplete="off" maxlength="2000" placeholder="YOUR PROBLEM">
+      <button type="submit">Say</button>
+    </form>
+    <div class="tools">
+      <button class="ghost" id="golden" type="button">Next 1966 line</button>
+    </div>
+  </footer>
+  <div class="scan" aria-hidden="true"></div>
+  <script>
+    const logEl = document.getElementById("log");
+    const engineEl = document.getElementById("engine");
+    const turnsEl = document.getElementById("turns");
+    const cursorEl = document.getElementById("cursor");
+    const cidEl = document.getElementById("cid");
+    const memoryEl = document.getElementById("memory");
+    const hintEl = document.getElementById("hint");
+    const keywordEl = document.getElementById("keyword");
+    const sourceEl = document.getElementById("source");
+    const sentenceEl = document.getElementById("sentence");
+    const messageEl = document.getElementById("message");
+    const goldenBtn = document.getElementById("golden");
+
+    let conversationId = null;
+    let engine = "replay";
+    let golden = [];
+    let replayNext = 0;
+    let history = [];
+
+    async function api(path, opts) {
+      const res = await fetch(path, opts);
+      const text = await res.text();
+      let data = {};
+      try { data = text ? JSON.parse(text) : {}; } catch (err) {
+        throw new Error(text || res.statusText);
+      }
+      if (!res.ok) throw new Error(data.error || res.statusText);
+      return data;
+    }
+
+    function line(who, text, extra) {
+      const wrap = document.createElement("article");
+      wrap.className = "turn";
+      const label = document.createElement("div");
+      label.className = "who " + who.toLowerCase();
+      label.textContent = who;
+      const body = document.createElement("div");
+      body.className = "text";
+      body.textContent = text;
+      wrap.append(label, body);
+      if (extra) wrap.append(extra);
+      logEl.append(wrap);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function setMemory(items) {
+      memoryEl.replaceChildren();
+      if (!items || !items.length) {
+        const li = document.createElement("li");
+        li.className = "warn";
+        li.textContent = "empty";
+        memoryEl.append(li);
+        return;
+      }
+      for (const item of items) {
+        const li = document.createElement("li");
+        li.textContent = item;
+        memoryEl.append(li);
+      }
+    }
+
+    function setMeta(data) {
+      engine = data.engine || engine;
+      engineEl.textContent = engine;
+      conversationId = data.conversation_id || conversationId;
+      cidEl.textContent = conversationId ? conversationId.slice(0, 8) : "—";
+      replayNext = data.replay_next || 0;
+      cursorEl.textContent = String(replayNext);
+      turnsEl.textContent = String(data.turn || (data.turns && data.turns.length) || 0);
+      setMemory(data.memory);
+      const trace = data.trace || {};
+      keywordEl.textContent = trace.keyword || "—";
+      sourceEl.textContent = trace.source || "—";
+      sentenceEl.textContent = trace.sentence || "—";
+      if (engine === "replay") {
+        hintEl.textContent = "Replay ignores wording and walks the 1966 transcript.";
+      } else if (engine === "shadow") {
+        hintEl.textContent = "Caller hears replay; the port also runs. Mismatches show in the log.";
+      } else {
+        hintEl.textContent = "Live: the Python port answers from the 1966 script.";
+      }
+    }
+
+    async function newSession() {
+      logEl.replaceChildren();
+      history = [];
+      const created = await api("/api/conversations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ conversation_id: crypto.randomUUID() }),
+      });
+      setMeta(created);
+      line("ELIZA", created.greeting);
+      history.push({ who: "ELIZA", text: created.greeting });
+      messageEl.focus();
+    }
+
+    async function say(text) {
+      const data = await api("/say", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ conversation_id: conversationId, message: text }),
+      });
+      line("USER", text);
+      history.push({ who: "USER", text });
+      let extra = null;
+      if (Object.prototype.hasOwnProperty.call(data, "match")) {
+        extra = document.createElement("div");
+        extra.className = "match" + (data.match ? "" : " no");
+        extra.textContent = data.match
+          ? "SHADOW MATCH"
+          : "SHADOW MISMATCH  live: " + data.live;
+      }
+      line("ELIZA", data.reply, extra);
+      history.push({ who: "ELIZA", text: data.reply });
+      setMeta(data);
+    }
+
+    document.getElementById("composer").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const text = messageEl.value.trim();
+      if (!text || !conversationId) return;
+      messageEl.value = "";
+      try { await say(text); }
+      catch (err) { line("ELIZA", String(err.message || err)); }
+    });
+
+    document.getElementById("new").addEventListener("click", () => {
+      newSession().catch((err) => line("ELIZA", String(err.message || err)));
+    });
+
+    document.getElementById("export").addEventListener("click", () => {
+      const body = history.map((row) => row.who + ": " + row.text).join("\n") + "\n";
+      const blob = new Blob([body], { type: "text/plain" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "eliza-transcript.txt";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+
+    goldenBtn.addEventListener("click", () => {
+      if (!golden.length) return;
+      const turn = golden[replayNext % golden.length];
+      messageEl.value = turn.user;
+      messageEl.focus();
+    });
+
+    (async function boot() {
+      const status = await api("/api/status");
+      engine = status.engine;
+      engineEl.textContent = engine;
+      const g = await api("/api/golden");
+      golden = g.turns || [];
+      await newSession();
+    })().catch((err) => {
+      line("ELIZA", String(err.message || err));
+    });
+  </script>
+</body>
+</html>

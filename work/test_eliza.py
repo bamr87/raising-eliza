@@ -114,5 +114,37 @@ for _index, (_user_text, _expected_reply) in enumerate(GOLDEN_PAIRS, start=1):
 del _index, _user_text, _expected_reply
 
 
+class ElizaIsScriptDriven(unittest.TestCase):
+    """Novel inputs, own session. Replies must come from the script, not a table."""
+
+    def setUp(self):
+        import eliza
+        self.session = eliza.Eliza()
+
+    def test_computer_keyword_outranks_dream(self):
+        reply = self.session.respond("I dreamed about my computer last night.")
+        self.assertEqual(reply, "DO COMPUTERS WORRY YOU")
+        self.assertEqual(self.session.last["keyword"], "COMPUTER")
+        self.assertEqual(self.session.last["source"], "rule")
+
+    def test_everybody_links_to_everyone(self):
+        reply = self.session.respond("Everybody hates me.")
+        self.assertEqual(reply, "REALLY, EVERYBODY")
+        self.assertEqual(self.session.last["keyword"], "EVERYBODY")
+
+    def test_none_rule_when_no_keyword(self):
+        reply = self.session.respond("asdfgh qwerty zxcvb")
+        self.assertEqual(reply, "I AM NOT SURE I UNDERSTAND YOU FULLY")
+        self.assertIsNone(self.session.last["keyword"])
+        self.assertEqual(self.session.last["source"], "none")
+
+    def test_sessions_do_not_share_reassembly_cycles(self):
+        import eliza
+        a = eliza.Eliza()
+        b = eliza.Eliza()
+        self.assertEqual(a.respond("Men are all alike."), "IN WHAT WAY")
+        self.assertEqual(b.respond("Men are all alike."), "IN WHAT WAY")
+
+
 if __name__ == "__main__":
     unittest.main()
